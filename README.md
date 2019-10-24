@@ -1,6 +1,12 @@
 # mongodb-to-couchbase
 Code to assist with one-time migration of data from MongoDB to Couchbase.
 
+**couchbaseexample**
+Full Java console application that demonstrates how to connect to a Couchbase cluster, perform key/value operations, and execute secondary lookups via N1QL queries using the Couchbase Java SDK.
+
+**mongoexample**
+Full Java console application that demonstrates how to connect to a MongoDB cluster, perform key/value operations, and execute secondary lookups using the MongoDB Java SDK.
+
 **transform.js**
 Couchbase Eventing function to transform MongoDB export data in real time as it is imported into Couchbase.
 
