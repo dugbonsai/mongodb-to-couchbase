@@ -1,7 +1,7 @@
 # mongodb-to-couchbase
 Code to assist with one-time migration of data from MongoDB to Couchbase and used in the following blog articles:
 [Migrating Data from MongoDB to Couchbase](https://blog.couchbase.com/migrating-data-from-mongodb-to-couchbase/)
-[Migrating Data from MongoDB to Couchbase, Part 2]( https://blog.couchbase.com/migrating-from-m…couchbase-part-2/ ‎)
+[Migrating Data from MongoDB to Couchbase, Part 2](https://blog.couchbase.com/migrating-from-m…couchbase-part-2/)
 
 **couchbaseexample**
 Full Java console application that demonstrates how to connect to a Couchbase cluster, perform key/value operations, and execute secondary lookups via N1QL queries using the Couchbase Java SDK.
