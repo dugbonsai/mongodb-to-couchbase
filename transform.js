@@ -44,9 +44,16 @@ function transformValues(parentObj, parentProperty, obj) {
           break;
 
         case "$date":
-          // convert parentObj.parentProperty = {"$date":{"$numberLong":"-2418768000000"}}
-          // to parentObj.parentProperty = -2418768000000
-          parentObj[parentProperty] = Number(obj["$date"]["$numberLong"]);
+          if (obj["$date"]["$numberLong"] != null) {
+            // convert parentObj.parentProperty = {"$date":{"$numberLong":"-2418768000000"}}
+            // to parentObj.parentProperty = -2418768000000
+            parentObj[parentProperty] = Number(obj["$date"]["$numberLong"]);
+            break;
+          }
+
+          // convert parentObj.parentProperty = {"$date":"1983-04-27T20:39:15Z"}}
+          // to parentObj.parentProperty = "1983-04-27T20:39:15Z"
+          parentObj[parentProperty] = obj["$date"];
           break;
 
         case "$numberInt":
