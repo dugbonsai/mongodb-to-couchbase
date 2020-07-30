@@ -1,8 +1,5 @@
 import com.mongodb.Block;
-import com.mongodb.client.MongoClient;
-import com.mongodb.client.MongoClients;
-import com.mongodb.client.MongoCollection;
-import com.mongodb.client.MongoDatabase;
+import com.mongodb.client.*;
 import com.mongodb.client.model.*;
 import org.bson.Document;
 import org.bson.types.ObjectId;
@@ -20,8 +17,11 @@ public class MongoTest {
         MongoCollection<Document> movies = mongoDatabase.getCollection("movies");
 
         // Get a document by ID
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579cc"))).forEach(printBlock);
-        movies.find(Filters.eq("_id", new ObjectId("573a1390f29313caabcd4135"))).forEach(printBlock);
+        Document document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579cc"))).first();
+        System.out.println(document.toJson());
+
+        document = movies.find(Filters.eq("_id", new ObjectId("573a1390f29313caabcd4135"))).first();
+        System.out.println(document.toJson());
 
         // Insert a new document
         Document doc = new Document("_id", new ObjectId("5a9427648b0beebeb69579c0"))
@@ -47,18 +47,23 @@ public class MongoTest {
                 .append("movie_id", new ObjectId("573a1390f29313caabcd4323"))
                 .append("text", "This is Anat's review");
         documents.add(doc2);
+        
         comments.insertMany(documents);
 
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).forEach(printBlock);
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c1"))).forEach(printBlock);
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c2"))).forEach(printBlock);
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).first();
+        System.out.println(document.toJson());
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c1"))).first();
+        System.out.println(document.toJson());
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c2"))).first();
+        System.out.println(document.toJson());
 
         // Update a document
         comments.updateOne(
                 Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0")),
                 Updates.combine(Updates.set("text", "")));
 
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).forEach(printBlock);
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).first();
+        System.out.println(document.toJson());
 
         // Update multiple documents
         comments.updateMany(
@@ -67,9 +72,12 @@ public class MongoTest {
                         Updates.set("name", "Anita Chase"),
                         Updates.set("email", "anita_chase@fakegmail.com")));
 
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).forEach(printBlock);
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c1"))).forEach(printBlock);
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c2"))).forEach(printBlock);
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).first();
+        System.out.println(document.toJson());
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c1"))).first();
+        System.out.println(document.toJson());
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c2"))).first();
+        System.out.println(document.toJson());
 
         // Replace a document
         comments.replaceOne(
@@ -77,10 +85,10 @@ public class MongoTest {
                 new Document("name", "Mia Hannas")
                         .append("email", "mia_hannas@fakegmail.com")
                         .append("movie_id", new ObjectId("573a1390f29313caabcd4135"))
-                        .append("text", "This is Mia's review"),
-                new UpdateOptions().upsert(true));
+                        .append("text", "This is Mia's review"));
 
-        comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).forEach(printBlock);
+        document = comments.find(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0"))).first();
+        System.out.println(document.toJson());
 
         // Delete a document
         comments.deleteOne(Filters.eq("_id", new ObjectId("5a9427648b0beebeb69579c0")));
@@ -89,17 +97,17 @@ public class MongoTest {
         comments.deleteMany(Filters.eq("name", "Anita Chase"));
 
         // Query a collection
-        movies.find(Filters.and(Filters.gte("year", 1970), Filters.lte("year", 1979)))
+        MongoCursor<Document> cursor = movies.find(Filters.and(Filters.gte("year", 1970), Filters.lte("year", 1979)))
                 .sort(Sorts.descending("imdb.rating"))
                 .projection(Projections.fields(
                         Projections.include("title", "year", "imdb.rating" ),
-                        Projections.excludeId()))
-                .forEach(printBlock);
-    }
-
-    static Block<Document> printBlock = new Block<Document>() {
-        public void apply(final Document document) {
-            System.out.println(document.toJson());
+                        Projections.excludeId())).iterator();
+        try {
+            while (cursor.hasNext()) {
+                System.out.println(cursor.next().toJson());
+            }
+        } finally {
+            cursor.close();
         }
-    };
+    }
 }
